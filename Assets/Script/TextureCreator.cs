@@ -100,7 +100,7 @@ public class TextureCreator : MonoBehaviour {
 
         int iMax = Resolution * Resolution;
         float StepSize = 1f / Resolution;
-        NoiseMethod Method = Noise.NoiseMethods[(int)NoiseType][Dimensions - 1];
+        NoiseMethod Method = NoiseOld.NoiseMethods[(int)NoiseType][Dimensions - 1];
         for (int i = 0; i < iMax; i++)
         {
             int x = i % Resolution;
@@ -111,12 +111,20 @@ public class TextureCreator : MonoBehaviour {
                 Vector3.Lerp(Points[1], Points[3], (y + 0.5f) * StepSize),
                 (x + 0.5f) * StepSize
             );
-            float Sample = Noise.Sum(Method, LerpPoint, Frequency, Octaves, Lacunarity, Persistance);
-            if(NoiseType == NoiseMethodType.Perlin)
+
+            //float Sample = Noise.Value(new Vector2(LerpPoint.x, LerpPoint.y), Frequency, Octaves, Lacunarity, Persistance);
+            //float Sample = Noise.Value(LerpPoint, Frequency, Octaves, Lacunarity, Persistance);
+
+            //float Sample = Noise.Perlin(LerpPoint.x, Frequency, Octaves, Lacunarity, Persistance);
+            //float Sample = Noise.Perlin(new Vector2(LerpPoint.x, LerpPoint.y), Frequency, Octaves, Lacunarity, Persistance);
+            float Sample = Noise.Perlin(LerpPoint, Frequency, Octaves, Lacunarity, Persistance);
+
+            //float Sample = NoiseOld.Sum(Method, LerpPoint, Frequency, Octaves, Lacunarity, Persistance);
+
+            if (NoiseType == NoiseMethodType.Perlin)
             {
                 Sample = Sample * 0.5f + 0.5f;
             }
-
             Texture.SetPixel(x, y, Coloring.Evaluate(Sample));
         }
         Texture.Apply();
